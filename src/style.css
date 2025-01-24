@@ -1,0 +1,25 @@
+@import 'tailwindcss';
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+}
+
+#page-container {
+  width: 100%;
+  height: 100%;
+}
+
+#app {
+  width: 100%;
+  height: 100%;
+
+  overflow-x: auto;
+  overflow-y: scroll;
+  padding: 1rem;
+
+  margin: 0 auto;
+}
