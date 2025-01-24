@@ -10,6 +10,7 @@ declare module 'vue' {
     Field: typeof import('./src/components/Field.vue')['default']
     FixedPoint: typeof import('./src/components/FixedPoint.vue')['default']
     Flags: typeof import('./src/components/Flags.vue')['default']
+    Icon: typeof import('./src/components/Icon.vue')['default']
     Input: typeof import('./src/components/Input.vue')['default']
     Panel: typeof import('./src/components/Panel.vue')['default']
     Select: typeof import('./src/components/Select.vue')['default']

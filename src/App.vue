@@ -6,33 +6,31 @@
         <div class="flex gap-2">
           <button @click="page = 'main'" :aria-selected="page == 'main'">Parameters</button>
           <button @click="page = 'init-sequence'" :aria-selected="page == 'init-sequence'">Init Sequence</button>
-          <button @click="page = 'json'" :aria-selected="page == 'json'" :disabled="!firmware">JSON</button>
           <button @click="page = 'dts'" :aria-selected="page == 'dts'" :disabled="!firmware">DTS</button>
-          <button @click="page = 'hex'" :aria-selected="page == 'hex'" :disabled="!firmware">HEX</button>
+          <button @click="page = 'json'" :aria-selected="page == 'json'" :disabled="!firmware">JSON</button>
+          <button @click="page = 'hex'" :aria-selected="page == 'hex'" :disabled="!firmware">Firmware</button>
         </div>
         <div class="flex gap-2">
-          <div class="flex items-center gap-1">
-            <select v-model="preset" class="ml-0 h-7 rounded border px-2 text-[1rem]!">
-              <optgroup v-for="(group, gid) in presets" :key="gid" :label="group.name">
-                <option v-for="(item, idx) in group.children" :key="idx" :value="'preset:' + item.data">
-                  {{ item.name }}
-                </option>
-              </optgroup>
-              <optgroup label="-- Import --">
-                <option value="import:firmware">Panel Firmware (*.panel)</option>
-                <!-- option value="import:rockchip">Rockchip's DTB</option -->
-              </optgroup>
-            </select>
-            <input type="file" ref="upload" accept=".panel" @input="onUploadFile" class="hidden" />
-            <button @click="onPresetLoad()" class="h-7">Import</button>
-          </div>
-          <button @click="downloadFirmware()" :disabled="!firmware">Download</button>
+          <button @click="downloadJson()"><Icon name="download" />JSON</button>
+          <button @click="downloadFirmware()"><Icon name="download" />Panel Firmware</button>
         </div>
       </div>
     </div>
     <div v-if="page === 'main'" class="basis-full">
       <div>
-        <h2>Configurations:</h2>
+        <h2>
+          Configurations:
+          <div class="flex gap-2">
+            <select v-model="preset" class="ml-0 h-7 rounded border px-2 text-[1rem]!">
+              <optgroup v-for="(group, gid) in presets" :key="gid" :label="group.name">
+                <option v-for="(item, idx) in group.children" :key="idx" :value="item.data">
+                  {{ item.name }}
+                </option>
+              </optgroup>
+            </select>
+            <button @click="onPresetLoad()" class="h-7">Load</button>
+          </div>
+        </h2>
         <div class="flex flex-wrap gap-x-8 gap-y-4 pl-4">
           <Panel class="w-full">
             <Field label="Filename" size="32">
@@ -165,18 +163,6 @@
         <textarea v-model="commands" class="h-full w-full resize-none" />
       </div>
     </div>
-    <div v-if="page === 'json'" class="flex flex-grow basis-full flex-col">
-      <h2>
-        JSON:
-        <div class="flex gap-2">
-          <Upload @upload="uploadJson($event)">Import JSON</Upload>
-          <button @click="downloadJson()">Download JSON</button>
-        </div>
-      </h2>
-      <div class="relative flex-grow pl-4">
-        <textarea class="h-full w-full resize-none" @change="onJsonChange($event)" :value="json"></textarea>
-      </div>
-    </div>
     <div v-if="page === 'dts'" class="flex flex-grow basis-full flex-col">
       <h2>
         DTS:
@@ -193,8 +179,24 @@
         <textarea readonly class="h-full w-full resize-none bg-gray-100" :value="dts"></textarea>
       </div>
     </div>
+    <div v-if="page === 'json'" class="flex flex-grow basis-full flex-col">
+      <h2>
+        JSON:
+        <div class="flex gap-2">
+          <Upload @upload="uploadJson" accept=".json"><Icon name="upload" />JSON</Upload>
+        </div>
+      </h2>
+      <div class="relative flex-grow pl-4">
+        <textarea class="h-full w-full resize-none" @change="onJsonChange($event)" :value="json"></textarea>
+      </div>
+    </div>
     <div v-if="page === 'hex'" class="flex flex-grow basis-full flex-col">
-      <h2>HEX:</h2>
+      <h2>
+        Firmware:
+        <div class="flex gap-2">
+          <Upload @upload="uploadFirmware" accept=".panel"><Icon name="upload" />Panel Firmware</Upload>
+        </div>
+      </h2>
       <div class="relative flex-grow pl-4">
         <textarea class="h-full w-full resize-none bg-gray-100" :value="dump"></textarea>
       </div>
@@ -369,6 +371,19 @@ function downloadBlobAs(filename: string, blob: Blob) {
   }, 100);
 }
 
+function uploadFirmware(data: Uint8Array, file: File) {
+  try {
+    const parsed = new PanelFirmware(data).serialize();
+    config.value = {
+      ...parsed,
+
+      filename: file.name.replace(/\.panel$/, ''),
+    };
+  } catch (e) {
+    alert(e);
+  }
+}
+
 function downloadFirmware() {
   if (!firmware.value) return;
   const blob = firmware.value.blob();
@@ -423,49 +438,20 @@ function normalizeCommands() {
   config.value = parsed;
 }
 
-const preset = ref('');
-
-const upload = ref<HTMLInputElement>();
-async function onUploadFile(e: Event) {
-  const obj = e.target as HTMLInputElement;
-  if (!obj.files) return;
-
-  const file = obj.files[0];
-
-  try {
-    const parsed = new PanelFirmware(await file.bytes()).serialize();
-    config.value = {
-      ...parsed,
-
-      filename: file.name.replace(/\.(panel|dtb)$/, ''),
-    };
-  } catch (e) {
-    alert(e);
-  }
-}
+const preset = ref<string | SerializedConfig | undefined>(undefined);
 
 function onPresetLoad() {
   try {
-    let data = '';
-    if (preset.value.startsWith('preset:')) {
-      data = preset.value.slice(7);
+    let data = preset.value;
+    if (!data) return;
+
+    if (typeof data === 'string') {
       if (data.startsWith('base64:')) data = atob(data.slice(7));
-    }
-    if (preset.value.startsWith('import:')) {
-      switch (preset.value.slice(7)) {
-        case 'rockchip':
-          alert('Not supported yet');
-          break;
-        case 'firmware':
-          upload.value!.click();
-          break;
-      }
-      return;
+      data = JSON.parse(data) as SerializedConfig;
     }
 
     if (data) {
-      const conf = JSON.parse(data);
-      const parsed = new PanelFirmware(conf).serialize({ normalizeCommands: false });
+      const parsed = new PanelFirmware(data).serialize({ normalizeCommands: false });
 
       config.value = parsed;
     }
@@ -476,7 +462,7 @@ function onPresetLoad() {
       ...config.value,
     };
   }
-  preset.value = '';
+  preset.value = undefined;
 }
 
 const compact = ref(true);

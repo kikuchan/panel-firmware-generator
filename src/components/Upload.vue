@@ -1,11 +1,14 @@
 <template>
   <button @click="onClick()">
     <slot />
-    <input ref="file" type="file" @input="onUpload" class="hidden" />
+    <input ref="file" type="file" @input="onUpload" class="hidden" v-bind="$attrs" />
   </button>
 </template>
 
 <script lang="ts" setup>
+defineOptions({
+  inheritAttrs: false,
+});
 const file = ref<HTMLInputElement>();
 
 function onClick() {
@@ -20,7 +23,7 @@ async function onUpload(e: Event) {
 
   const file = obj.files[0];
 
-  emit('upload', await file.bytes());
+  emit('upload', await file.bytes(), file);
 }
 </script>
 
