@@ -35,7 +35,11 @@
         <div class="flex flex-wrap gap-x-8 gap-y-4 pl-4">
           <Panel class="w-full">
             <Field label="Filename" size="32">
-              <input type="text" v-model="config.filename" class="h-full w-full bg-white focus:outline-none" />
+              <input
+                type="text"
+                v-model="config.filename"
+                :placeholder="unknownFilename"
+                class="h-full w-full bg-white focus:outline-none" />
             </Field>
           </Panel>
           <Panel>
@@ -245,8 +249,10 @@ const drmBusFlags = [
   ['SHARP_SIGNALS'],
 ];
 
+const unknownFilename = 'unknown-vendor,unknown-panel';
+
 const config = ref<SerializedConfig>({
-  filename: 'unknown-vendor,unknown-panel',
+  filename: undefined,
 
   width_mm: 70,
   height_mm: 53,
@@ -388,7 +394,7 @@ function uploadFirmware(data: Uint8Array, file: File) {
 function downloadFirmware() {
   if (!firmware.value) return;
   const blob = firmware.value.blob();
-  downloadBlobAs(`${config.value.filename}.panel`, blob);
+  downloadBlobAs(`${config.value.filename || unknownFilename}.panel`, blob);
 }
 
 function uploadJson(data: Uint8Array) {
@@ -406,7 +412,7 @@ function uploadJson(data: Uint8Array) {
 function downloadJson() {
   if (!firmware.value) return;
   const blob = new Blob([json.value!]);
-  downloadBlobAs(`${config.value.filename}.json`, blob);
+  downloadBlobAs(`${config.value.filename || unknownFilename}.json`, blob);
 }
 
 function diagonal(x: number, y: number) {
@@ -480,7 +486,7 @@ const dts = computed(
     __overlay__ {
       compatible = "${config.value.dsi.lanes > 0 ? 'panel-mipi-dsi' : 'panel-mipi-dpi-spi'}";
 
-${flagFirmware.value ? `      firmware-name = "${config.value.filename}";` : firmware.value?.dts({ compact: compact.value, indent: 6 })}
+${flagFirmware.value ? `      firmware-name = "${config.value.filename || unknownFilename}";` : firmware.value?.dts({ compact: compact.value, indent: 6 })}
     };
   };
 };

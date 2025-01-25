@@ -147,7 +147,7 @@ type Config = {
 
 export type SerializedPanelTiming = PanelTimingObject<FlagsObject<DrmModeFlags>>;
 export type SerializedConfig = {
-  filename: string;
+  filename?: string;
 
   width_mm: number;
   height_mm: number;
@@ -495,7 +495,7 @@ function parseConfig(config: Config): ParsedConfig {
 
 function serializeConfig(config: ParsedConfig, { normalizeCommands }: SerializeOptions): SerializedConfig {
   return {
-    filename: config.filename ?? 'unknown-vendor,unknown-panel',
+    filename: config.filename,
 
     width_mm: config.width_mm,
     height_mm: config.height_mm,
