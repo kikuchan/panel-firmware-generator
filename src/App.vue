@@ -103,7 +103,7 @@
                 <span class="text-slate-400">@</span>
                 {{ fps(item).toFixed(2) }}
               </div>
-              <div class="space-x-0.5">
+              <div class="flex gap-0.5">
                 <button class="" @click.stop="duplicateItem(item)">Duplicate</button>
                 <button class="border-red-400! bg-red-200! hover:bg-red-300!" @click.stop="removeItem(item)">
                   Remove
@@ -162,7 +162,7 @@
     <div v-if="page === 'init-sequence'" class="flex flex-grow basis-full flex-col">
       <h2>
         Init Sequence:
-        <button @click="normalizeCommands()">Normalize</button>
+        <button @click="normalizeCommands()"><Icon name="creation" />Normalize</button>
       </h2>
       <div class="relative flex-grow pl-4">
         <textarea v-model="commands" class="h-full w-full resize-none" />
@@ -510,6 +510,7 @@ h2 {
 
 h1 {
   @apply mb-4 text-5xl;
+  @apply border-b;
 }
 
 h2 {
@@ -520,10 +521,11 @@ button {
   @apply cursor-pointer rounded border-2 border-slate-500 bg-slate-200 px-2 text-base hover:bg-slate-300;
   @apply aria-selected:bg-indigo-300;
   @apply disabled:border-slate-300 disabled:text-slate-400;
+  @apply flex items-center gap-0.5;
 }
 
 textarea {
-  @apply field-sizing-content w-full overflow-auto rounded-md p-2 font-mono outline outline-black focus:outline-2;
+  @apply field-sizing-content min-h-96 w-full overflow-auto rounded-md p-2 font-mono outline outline-black focus:outline-2;
 }
 
 .content {
