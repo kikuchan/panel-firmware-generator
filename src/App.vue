@@ -20,7 +20,8 @@
       <div>
         <h2>
           Configurations:
-          <div class="flex gap-2">
+          <div class="relative flex gap-2">
+            <label class="absolute -top-5 font-mono text-sm select-none">Presets</label>
             <select v-model="preset" class="ml-0 h-7 rounded border px-2 text-[1rem]!">
               <optgroup v-for="(group, gid) in presets" :key="gid" :label="group.name">
                 <option v-for="(item, idx) in group.children" :key="idx" :value="item.data">
@@ -502,13 +503,11 @@ h2 {
 }
 
 h1 {
-  font-size: 3rem;
-  line-height: 1;
-  margin: 0 0 1rem 0;
+  @apply mb-4 text-5xl;
 }
 
 h2 {
-  @apply mt-6 mb-4 flex w-full justify-between gap-2 text-[2rem] leading-7;
+  @apply mt-4 mb-2 flex w-full items-end justify-between gap-2 text-4xl;
 }
 
 button {
