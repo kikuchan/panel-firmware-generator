@@ -598,6 +598,10 @@ dsi-lanes = <${serialized.dsi.lanes > 0 && serialized.dsi.lanes}>;
 dsi-format = "${serialized.dsi.format}";${coalesce`${indent(0, serializeDsiModeFlagsForDTS(serialized.dsi.mode_flags))}
 `}`}${coalesce`
 
+init-sequence = [
+${serialized.init_sequence.length > 0 && indent(2, config.init_sequence.serialize({ format: opts.compact ? 'dts-compact' : 'dts' }).join('\n'))}
+];`}${coalesce`
+
 display-timings {
   native-mode = <&timing${serialized.preferredTiming}>;
   ${
@@ -605,7 +609,7 @@ display-timings {
     serialized.timings
       .map(
         (timing, idx) => `
-  timing${idx} {
+  timing${idx}: timing@${idx} {
     clock-frequency = <${timing.dclk * 1000}>;
 
     hactive = <${timing.hactive}>;
@@ -623,11 +627,7 @@ ${indent(4, serializeDrmFlagsForDTS(timing.flags, serialized.bus_flags))}`}
       )
       .join('\n')
   }
-};`}${coalesce`
-
-init-sequence = [
-${serialized.init_sequence.length > 0 && indent(2, config.init_sequence.serialize({ format: opts.compact ? 'dts-compact' : 'dts' }).join('\n'))}
-];`}`.trim(),
+};`}`.trim(),
   );
 }
 
@@ -664,5 +664,9 @@ export class PanelFirmware {
 
   dts(opts?: DtsOptions) {
     return toDTS(this.#config, opts);
+  }
+
+  commands() {
+    return this.#config.init_sequence;
   }
 }
