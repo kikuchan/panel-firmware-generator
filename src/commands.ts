@@ -129,7 +129,7 @@ function parseStringCommand(line: string): ObjectStyleCommand {
     args.shift();
   }
 
-  const cmds = args.filter((x) => x !== 'arguments').map((x) => x.match(/^(0x)?[0-9a-fA-F]{1,2}$/) && parseInt(x, 16));
+  const cmds = args.filter((x) => x !== 'arguments').map((x) => x.match(/^(0x)?[0-9a-fA-F]{1,3}$/) && parseInt(x, 0));
   if (cmds.some((x) => x === null || isNaN(x)) || cmds.length < 1) {
     throw new Error('Invalid command or parameters: ' + line);
   }
