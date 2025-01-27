@@ -563,16 +563,16 @@ rotation = <${serialized.rotation}>;
 reset-delay = <${serialized.delays.reset}>;
 init-delay = <${serialized.delays.init}>;
 sleep-delay = <${serialized.delays.sleep}>;
-backlight-delay = <${serialized.delays.backlight}>;${coalesce`
-
+backlight-delay = <${serialized.delays.backlight}>;
+${coalesce`
 dsi-lanes = <${serialized.dsi.lanes > 0 && serialized.dsi.lanes}>;
-dsi-format = "${serialized.dsi.format}";${coalesce`${indent(0, serializeDsiModeFlagsForDTS(serialized.dsi.mode_flags))}
+dsi-format = "${serialized.dsi.format}";
+${coalesce`${indent(0, serializeDsiModeFlagsForDTS(serialized.dsi.mode_flags))}
 `}`}${coalesce`
-
 init-sequence = [
 ${serialized.init_sequence.length > 0 && indent(2, config.init_sequence.serialize({ format: opts.compact ? 'dts-compact' : 'dts' }).join('\n'))}
-];`}${coalesce`
-
+];
+`}${coalesce`
 display-timings {
   native-mode = <&timing${serialized.preferred_timing}>;
   ${
