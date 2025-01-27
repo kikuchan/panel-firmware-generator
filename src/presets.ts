@@ -24,7 +24,7 @@ export const presets = [
             DE_HIGH: true,
             PIXDATA_DRIVE_NEGEDGE: true,
           },
-          preferredTiming: 0,
+          preferred_timing: 0,
           timings: [
             {
               hactive: 480,
@@ -129,7 +129,7 @@ export const presets = [
             DE_HIGH: true,
             PIXDATA_DRIVE_NEGEDGE: true,
           },
-          preferredTiming: 0,
+          preferred_timing: 0,
           timings: [
             {
               hactive: 720,
@@ -340,7 +340,7 @@ export const presets = [
             DE_HIGH: true,
             PIXDATA_DRIVE_NEGEDGE: true,
           },
-          preferredTiming: 0,
+          preferred_timing: 0,
           timings: [
             {
               hactive: 640,
@@ -597,7 +597,7 @@ export const presets = [
             DE_HIGH: true,
             PIXDATA_DRIVE_NEGEDGE: true,
           },
-          preferredTiming: 0,
+          preferred_timing: 0,
           timings: [
             {
               hactive: 640,
@@ -796,7 +796,7 @@ export const presets = [
             DE_HIGH: true,
             PIXDATA_DRIVE_NEGEDGE: true,
           },
-          preferredTiming: 0,
+          preferred_timing: 0,
           timings: [
             {
               hactive: 640,
@@ -1044,7 +1044,7 @@ export const presets = [
             DE_HIGH: true,
             PIXDATA_DRIVE_NEGEDGE: true,
           },
-          preferredTiming: 0,
+          preferred_timing: 0,
           timings: [
             {
               hactive: 720,

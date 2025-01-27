@@ -94,7 +94,7 @@
         <div v-for="(item, idx) in config.timings" :key="idx" class="mt-2 pl-4">
           <div
             class="box-border rounded border border-slate-300 bg-slate-50 aria-selected:border-green-300 aria-selected:bg-green-50"
-            :aria-selected="idx === config.preferredTiming">
+            :aria-selected="idx === config.preferred_timing">
             <div
               class="flex items-center justify-between gap-4 bg-slate-200 px-0.5 leading-8 in-[&[aria-selected='true']]:bg-green-200">
               <div class="font-bold">
@@ -113,7 +113,7 @@
             <div class="flex w-full gap-4 px-2 py-1">
               <label class="flex flex-col items-center justify-center text-center">
                 <div class="block font-mono text-sm select-none">Prefer</div>
-                <input type="radio" v-model="config.preferredTiming" :value="idx" />
+                <input type="radio" v-model="config.preferred_timing" :value="idx" />
               </label>
               <div class="w-full">
                 <div class="mb-2 flex flex-wrap items-baseline gap-x-8 gap-y-2 p-1">
@@ -273,7 +273,7 @@ const config = ref<SerializedConfig>({
 
   bus_flags: {},
 
-  preferredTiming: 0,
+  preferred_timing: 0,
 
   timings: [],
 
@@ -346,8 +346,8 @@ function removeItem(item: SerializedPanelTiming) {
   const idx = config.value.timings.indexOf(item);
   if (idx >= 0) config.value.timings.splice(idx, 1);
 
-  if (config.value.preferredTiming >= config.value.timings.length) {
-    config.value.preferredTiming = 0;
+  if (config.value.preferred_timing >= config.value.timings.length) {
+    config.value.preferred_timing = 0;
   }
 }
 

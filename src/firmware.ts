@@ -118,7 +118,7 @@ type PanelTimingArray<F extends FlagsInput<DrmModeFlags>> = [
 ];
 type PanelTiming<F extends FlagsInput<DrmModeFlags>> = PanelTimingObject<F> | PanelTimingArray<F>;
 
-type Config = {
+export type PanelConfig = {
   filename?: string;
 
   width_mm?: number;
@@ -139,7 +139,7 @@ type Config = {
   };
   bus_flags?: FlagsInput<DrmBusFlags>;
 
-  preferredTiming?: number;
+  preferred_timing?: number;
   timings?: PanelTiming<FlagsInput<DrmModeFlags>>[];
 
   init_sequence?: PanelCommandsSource;
@@ -167,7 +167,7 @@ export type SerializedConfig = {
   };
   bus_flags: FlagsObject<DrmBusFlags>;
 
-  preferredTiming: number;
+  preferred_timing: number;
   timings: SerializedPanelTiming[];
 
   init_sequence: string[];
@@ -194,7 +194,7 @@ type ParsedConfig = {
   };
   bus_flags: number;
 
-  preferredTiming: number;
+  preferred_timing: number;
   timings: PanelTimingObject<number>[];
 
   init_sequence: PanelCommands;
@@ -363,7 +363,7 @@ function parseBlob(u8: Uint8Array | Uint8ClampedArray): ParsedConfig {
   conf.bus_flags = parseDrmBusFlags(r.readBe32());
   r.skip(2);
 
-  conf.preferredTiming = r.readByte();
+  conf.preferred_timing = r.readByte();
   const numTimings = r.readByte();
   conf.timings = [];
   for (let i = 0; i < numTimings; i++) {
@@ -450,7 +450,7 @@ function packConfig(config: ParsedConfig) {
     reserved(2),
 
     // config: timings
-    u8(config.preferredTiming),
+    u8(config.preferred_timing),
     u8(config.timings.length),
 
     // timings
@@ -466,7 +466,7 @@ function parsePanelTimings(timings: PanelTiming<FlagsInput<DrmModeFlags>>[]) {
   return timings.map((timing) => parsePanelTiming(timing));
 }
 
-function parseConfig(config: Config): ParsedConfig {
+function parseConfig(config: PanelConfig): ParsedConfig {
   return {
     filename: config.filename,
 
@@ -486,7 +486,7 @@ function parseConfig(config: Config): ParsedConfig {
     },
     bus_flags: parseDrmBusFlags(config.bus_flags ?? 0),
 
-    preferredTiming: config.preferredTiming ?? 0,
+    preferred_timing: config.preferred_timing ?? 0,
     timings: parsePanelTimings(config.timings ?? []),
 
     init_sequence: new PanelCommands(config.init_sequence ?? []),
@@ -513,7 +513,7 @@ function serializeConfig(config: ParsedConfig, { normalizeCommands }: SerializeO
     },
     bus_flags: serializeDrmBusFlags(config.bus_flags),
 
-    preferredTiming: config.preferredTiming,
+    preferred_timing: config.preferred_timing,
     timings: config.timings.map(serializePanelTiming),
 
     init_sequence: config.init_sequence.serialize({ normalize: normalizeCommands }),
@@ -603,7 +603,7 @@ ${serialized.init_sequence.length > 0 && indent(2, config.init_sequence.serializ
 ];`}${coalesce`
 
 display-timings {
-  native-mode = <&timing${serialized.preferredTiming}>;
+  native-mode = <&timing${serialized.preferred_timing}>;
   ${
     serialized.timings.length > 0 &&
     serialized.timings
@@ -634,7 +634,7 @@ ${indent(4, serializeDrmFlagsForDTS(timing.flags, serialized.bus_flags))}`}
 export class PanelFirmware {
   #config: ParsedConfig;
 
-  constructor(conf: Config | Uint8Array | Uint8ClampedArray) {
+  constructor(conf: PanelConfig | Uint8Array | Uint8ClampedArray) {
     if (conf instanceof Uint8Array || conf instanceof Uint8ClampedArray) {
       this.#config = parseBlob(conf);
     } else {
