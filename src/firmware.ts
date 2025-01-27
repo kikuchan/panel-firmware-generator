@@ -550,6 +550,19 @@ type DtsOptions = {
   compact?: boolean;
   indent?: number;
 };
+
+function vtotal(t: SerializedPanelTiming) {
+  return t.vactive + t.vfp + t.vslen + t.vbp;
+}
+
+function htotal(t: SerializedPanelTiming) {
+  return t.hactive + t.hfp + t.hslen + t.hbp;
+}
+
+function fps(t: SerializedPanelTiming) {
+  return Number((t.dclk * 1000) / (htotal(t) * vtotal(t)));
+}
+
 function toDTS(config: ParsedConfig, opts: DtsOptions = {}) {
   const serialized = serializeConfig(config, { normalizeCommands: false });
 
@@ -580,6 +593,7 @@ display-timings {
     serialized.timings
       .map(
         (timing, idx) => `
+  // ${timing.hactive}x${timing.vactive}@${fps(timing).toFixed(2)}
   timing${idx}: timing@${idx} {
     clock-frequency = <${timing.dclk * 1000}>;
 
