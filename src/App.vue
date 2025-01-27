@@ -6,7 +6,7 @@
         <div class="flex gap-2">
           <button @click="page = 'main'" :aria-selected="page == 'main'">Parameters</button>
           <button @click="page = 'init-sequence'" :aria-selected="page == 'init-sequence'">Init Sequence</button>
-          <button @click="page = 'dts'" :aria-selected="page == 'dts'" :disabled="!firmware">DTS</button>
+          <button @click="page = 'dts'" :aria-selected="page == 'dts'" :disabled="!firmware">DeviceTree</button>
           <button @click="page = 'json'" :aria-selected="page == 'json'" :disabled="!firmware">JSON</button>
           <button @click="page = 'hex'" :aria-selected="page == 'hex'" :disabled="!firmware">Firmware</button>
         </div>
@@ -170,7 +170,7 @@
     </div>
     <div v-if="page === 'dts'" class="flex flex-grow basis-full flex-col">
       <h2>
-        DTS:
+        Device Tree:
         <div class="flex gap-2">
           <label class="text-base select-none">
             <input type="checkbox" v-model="flagFirmware" /> Use Firmware File
@@ -178,6 +178,7 @@
           <label class="text-base select-none">
             <input type="checkbox" v-model="compact" /> Compact Init-Sequence
           </label>
+          <Upload @upload="uploadDtb" accept=".dtb"><Icon name="upload" />DTB</Upload>
         </div>
       </h2>
       <div class="relative flex-grow pl-4">
@@ -214,6 +215,7 @@
 import { hexdump } from '@kikuchan/hexdump';
 import { PanelFirmware, type SerializedConfig, type SerializedPanelTiming } from './firmware';
 import { presets } from './presets';
+import { parseRockchipFdt } from './rockchip';
 
 const commands = computed({
   set: (value) => {
@@ -400,6 +402,19 @@ function downloadFirmware() {
 function uploadJson(data: Uint8Array) {
   try {
     const conf = JSON.parse(new TextDecoder().decode(data));
+    const parsed = new PanelFirmware(conf).serialize({ normalizeCommands: false });
+
+    config.value = parsed;
+  } catch (e) {
+    console.log('ERROR:' + e);
+    alert(e);
+  }
+}
+
+function uploadDtb(data: Uint8Array) {
+  try {
+    const conf = parseRockchipFdt(data);
+    if (!conf) throw new Error(`Not supported or parse error`);
     const parsed = new PanelFirmware(conf).serialize({ normalizeCommands: false });
 
     config.value = parsed;
