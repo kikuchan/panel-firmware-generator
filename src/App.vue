@@ -170,16 +170,16 @@
     </div>
     <div v-if="page === 'dts'" class="flex flex-grow basis-full flex-col">
       <h2>
-        Device Tree:
-        <div class="flex gap-2">
-          <label class="text-base select-none">
+        <div class="flex items-baseline gap-2">
+          Device Tree:
+          <label class="ml-4 text-base select-none">
             <input type="checkbox" v-model="flagFirmware" /> Use Firmware File
           </label>
-          <label class="text-base select-none">
-            <input type="checkbox" v-model="compact" /> Compact Init-Sequence
+          <label class="mr-4 text-base select-none">
+            <input type="checkbox" :disabled="flagFirmware" v-model="compact" /> Compact Init-Sequence
           </label>
-          <Upload @upload="uploadDtb" accept=".dtb"><Icon name="upload" />DTB</Upload>
         </div>
+        <Upload @upload="uploadDtb" accept=".dtb"> <Icon name="upload" />DTB </Upload>
       </h2>
       <div class="relative flex-grow pl-4">
         <textarea readonly class="h-full w-full resize-none bg-gray-100" :value="dts"></textarea>
@@ -189,7 +189,7 @@
       <h2>
         JSON:
         <div class="flex gap-2">
-          <Upload @upload="uploadJson" accept=".json"><Icon name="upload" />JSON</Upload>
+          <Upload @upload="uploadJson" accept=".json"> <Icon name="upload" />JSON </Upload>
         </div>
       </h2>
       <div class="relative flex-grow pl-4">
@@ -200,7 +200,7 @@
       <h2>
         Firmware:
         <div class="flex gap-2">
-          <Upload @upload="uploadFirmware" accept=".panel"><Icon name="upload" />Panel Firmware</Upload>
+          <Upload @upload="uploadFirmware" accept=".panel"> <Icon name="upload" />Panel Firmware </Upload>
         </div>
       </h2>
       <div class="relative flex-grow pl-4">
