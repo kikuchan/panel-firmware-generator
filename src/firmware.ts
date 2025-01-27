@@ -1,3 +1,4 @@
+import { BinaryReader } from './BinaryReader';
 import { PanelCommands, type PanelCommandsSource } from './commands';
 
 type DsiFormat = 'rgb888' | 'rgb666' | 'rgb666-packed' | 'rgb565';
@@ -326,7 +327,7 @@ function serializePanelTiming(timing: PanelTimingObject<number>) {
 }
 
 function parseBlob(u8: Uint8Array | Uint8ClampedArray): ParsedConfig {
-  const r = new Reader(u8);
+  const r = new BinaryReader(u8);
 
   if (firmwareMagic.some((x) => x !== r.readByte())) {
     throw new Error('Invalid magic');
@@ -388,36 +389,6 @@ function parseBlob(u8: Uint8Array | Uint8ClampedArray): ParsedConfig {
   conf.init_sequence = new PanelCommands(u8.slice(r.position));
 
   return conf;
-}
-
-class Reader {
-  buffer: DataView<ArrayBufferLike>;
-  position: number;
-
-  constructor(u8: Uint8Array | Uint8ClampedArray) {
-    this.buffer = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
-    this.position = 0;
-  }
-
-  readByte() {
-    return this.buffer.getUint8(this.position++);
-  }
-
-  readBe16() {
-    const r = this.buffer.getUint16(this.position, false);
-    this.position += 2;
-    return r;
-  }
-
-  readBe32() {
-    const r = this.buffer.getUint32(this.position, false);
-    this.position += 4;
-    return r;
-  }
-
-  skip(n: number) {
-    this.position += n;
-  }
 }
 
 function packHeader() {
