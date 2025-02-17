@@ -1,4 +1,4 @@
-import { BinaryReader } from './BinaryReader';
+import { BinaryReader } from './binary-reader';
 import { PanelCommands, type PanelCommandsSource } from './commands';
 
 type DsiFormat = 'rgb888' | 'rgb666' | 'rgb666-packed' | 'rgb565';

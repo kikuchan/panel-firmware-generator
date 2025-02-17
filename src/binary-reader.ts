@@ -1,8 +1,10 @@
+export type BinaryLike = Uint8Array | Uint8ClampedArray | ArrayBuffer | DataView;
+
 export class BinaryReader {
   view: DataView;
   position: number;
 
-  constructor(u8: ArrayBuffer | Uint8Array | Uint8ClampedArray) {
+  constructor(u8: BinaryLike) {
     if (u8 instanceof ArrayBuffer) {
       this.view = new DataView(u8);
     } else {
@@ -42,7 +44,6 @@ export class BinaryReader {
 
   peekBuffer(n?: number) {
     if (n === undefined) n = this.remain;
-    if (this.remain < n) return undefined; // EOF
 
     const pos = this.view.byteOffset + this.position;
     return this.view.buffer.slice(pos, pos + n);
@@ -102,7 +103,9 @@ export class BinaryReader {
 
     const buffer = this.peekBuffer(len);
     try {
-      const string = new TextDecoder(encoding ?? 'utf-8', { fatal: true }).decode(buffer);
+      const string = new TextDecoder(encoding ?? 'utf-8', {
+        fatal: true,
+      }).decode(buffer);
       this.skip(len + extraLength);
       return string;
     } catch {

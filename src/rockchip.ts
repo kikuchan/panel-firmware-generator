@@ -1,4 +1,4 @@
-import { BinaryReader } from './BinaryReader';
+import { BinaryReader } from './binary-reader';
 import { Fdt, type FdtNode } from './fdt';
 import { type PanelConfig, PanelFirmware, type SerializedPanelTiming } from './firmware';
 

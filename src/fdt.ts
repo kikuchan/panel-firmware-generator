@@ -1,4 +1,4 @@
-import { BinaryReader } from './BinaryReader';
+import { BinaryReader } from './binary-reader';
 
 function coalesceArray<T>(arr: T[], fn: (elm: T) => T | undefined) {
   for (const elm of arr) {
