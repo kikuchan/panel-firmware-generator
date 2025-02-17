@@ -170,15 +170,7 @@
     </div>
     <div v-if="page === 'dts'" class="flex flex-grow basis-full flex-col">
       <h2>
-        <div class="flex items-baseline gap-2">
-          Device Tree:
-          <label class="ml-4 text-base select-none">
-            <input type="checkbox" v-model="flagFirmware" /> Use Firmware File
-          </label>
-          <label class="mr-4 text-base select-none">
-            <input type="checkbox" :disabled="flagFirmware" v-model="compact" /> Compact Init-Sequence
-          </label>
-        </div>
+        Device Tree:
         <Upload @upload="uploadDtb" accept=".dtb"> <Icon name="upload" />DTB </Upload>
       </h2>
       <div class="relative flex-grow pl-4">
@@ -487,9 +479,6 @@ function onPresetLoad() {
   preset.value = undefined;
 }
 
-const compact = ref(true);
-const flagFirmware = ref(true);
-
 const dts = computed(
   () => `/dts-v1/;
 /plugin/;
@@ -499,9 +488,7 @@ const dts = computed(
     target = <&panel>;
 
     __overlay__ {
-      compatible = "${config.value.dsi.lanes > 0 ? 'panel-mipi-dsi' : 'panel-mipi-dpi-spi'}";
-
-${flagFirmware.value ? `      firmware-name = "${config.value.filename || unknownFilename}";` : firmware.value?.dts({ compact: compact.value, indent: 6 })}
+      compatible = "${config.value.filename || unknownFilename}", "${config.value.dsi.lanes > 0 ? 'panel-mipi-dsi' : 'panel-mipi-dpi-spi'}";
     };
   };
 };
