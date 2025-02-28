@@ -23,7 +23,7 @@ async function onUpload(e: Event) {
 
   const file = obj.files[0];
 
-  emit('upload', await file.bytes(), file);
+  emit('upload', new Uint8Array(await file.arrayBuffer()), file);
 }
 </script>
 
